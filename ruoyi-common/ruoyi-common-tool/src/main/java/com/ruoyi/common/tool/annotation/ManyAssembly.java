@@ -20,12 +20,12 @@ import java.lang.annotation.Target;
 public @interface ManyAssembly {
 
     /**
-     * ID字段名
+     * 键字段名
      * <p>
      * 支持嵌套对象字段路径，使用点号分隔，如：crmVisitPlanDetailBaseVO.visitorId
      * </p>
      *
-     * @return ID字段名
+     * @return 键字段名
      */
     String keyField();
 

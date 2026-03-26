@@ -5,7 +5,6 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.ruoyi.common.tool.annotation.ManyAssembly;
 import com.ruoyi.common.tool.annotation.MultiAssembly;
 import com.ruoyi.common.tool.service.AssemblyService;
@@ -36,10 +35,12 @@ import java.util.Set;
 @Component
 public class AssemblyAspect {
 
-    private final Logger log= LoggerFactory.getLogger(AssemblyAspect.class);
-
     @Autowired
     private ApplicationContext applicationContext;
+
+    private final Logger log = LoggerFactory.getLogger(AssemblyAspect.class);
+
+
 
     /**
      * 多字段通用装配切面
@@ -91,10 +92,13 @@ public class AssemblyAspect {
         }
 
         ManyAssembly[] configs = multiAssembly.value();
-        Class<? extends AssemblyService<?, ?>> serviceClass = multiAssembly.service();
-
+        
         // 获取装配服务实例
-        AssemblyService<?, ?> assemblyService = applicationContext.getBean(serviceClass);
+        AssemblyService<?, ?> assemblyService = getAssemblyService(multiAssembly);
+        if (assemblyService == null) {
+            log.error("装配服务获取失败");
+            return;
+        }
 
         // 一次性收集所有ID，避免重复反射调用
         Set<Object> allIds = CollUtil.newHashSet();
@@ -122,9 +126,10 @@ public class AssemblyAspect {
                 }
             }
         }
-        List<Object> objects = Lists.newArrayList(allIds);
+
+        // 一次性批量查询所有数据
         Map<?, ?> dataMap = CollUtil.isNotEmpty(allIds) ?
-                assemblyService.batchGetData(objects) : MapUtil.newHashMap();
+                assemblyService.batchGetData(CollUtil.newArrayList(allIds)) : MapUtil.newHashMap();
 
         // 装配数据
         for (ManyAssembly config : configs) {
@@ -147,10 +152,13 @@ public class AssemblyAspect {
         }
 
         ManyAssembly[] configs = multiAssembly.value();
-        Class<? extends AssemblyService<?, ?>> serviceClass = multiAssembly.service();
-
+        
         // 获取装配服务实例
-        AssemblyService<?, ?> assemblyService = applicationContext.getBean(serviceClass);
+        AssemblyService<?, ?> assemblyService = getAssemblyService(multiAssembly);
+        if (assemblyService == null) {
+            log.error("装配服务获取失败");
+            return;
+        }
 
         // 收集所有ID
         Set<Object> allIds = CollUtil.newHashSet();
@@ -207,6 +215,37 @@ public class AssemblyAspect {
                 }
             }
         }
+    }
+
+    /**
+     * 获取装配服务实例
+     *
+     * @param multiAssembly 多字段装配注解配置
+     * @return 装配服务实例
+     */
+    private AssemblyService<?, ?> getAssemblyService(MultiAssembly multiAssembly) {
+        String beanName = multiAssembly.beanName();
+        Class<? extends AssemblyService<?, ?>> serviceClass = multiAssembly.service();
+
+        // 优先使用beanName获取
+        if (StrUtil.isNotBlank(beanName)) {
+            try {
+                return applicationContext.getBean(beanName, AssemblyService.class);
+            } catch (Exception e) {
+                log.error("通过beanName获取装配服务失败: {}", beanName, e);
+            }
+        }
+
+        // 如果beanName未指定或获取失败，使用serviceClass获取
+        if (serviceClass != null && serviceClass != AssemblyService.class) {
+            try {
+                return applicationContext.getBean(serviceClass);
+            } catch (Exception e) {
+                log.error("通过serviceClass获取装配服务失败: {}", serviceClass.getName(), e);
+            }
+        }
+
+        return null;
     }
 
     /**

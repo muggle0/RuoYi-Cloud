@@ -1,6 +1,8 @@
 package com.ruoyi.common.tool.annotation;
 
 import com.ruoyi.common.tool.service.AssemblyService;
+import com.ruoyi.common.tool.service.DefaultAssemblyService;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,9 +36,21 @@ public @interface MultiAssembly {
      * 装配服务类
      * <p>
      * 指定用于获取数据的服务类，该类必须实现AssemblyService接口。
+     * 与beanName二选一，优先使用beanName。
      * </p>
      *
      * @return 装配服务类
      */
-    Class<? extends AssemblyService<?, ?>> service();
+    Class<? extends AssemblyService<?, ?>> service() default DefaultAssemblyService.class;
+
+    /**
+     * 装配服务bean名称
+     * <p>
+     * 指定从Spring容器中获取的装配服务bean名称。
+     * 与service二选一，优先使用beanName。
+     * </p>
+     *
+     * @return 装配服务bean名称
+     */
+    String beanName() default "";
 }
