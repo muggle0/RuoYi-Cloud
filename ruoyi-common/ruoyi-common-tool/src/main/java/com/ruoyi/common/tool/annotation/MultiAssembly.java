@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MultiUserAssembly {
+public @interface MultiAssembly {
 
     /**
      * 用户装配配置数组
@@ -27,5 +27,5 @@ public @interface MultiUserAssembly {
      *
      * @return 用户装配配置数组
      */
-    UserAssemblyConfig[] value();
+    ManyAssembly[] value();
 }
