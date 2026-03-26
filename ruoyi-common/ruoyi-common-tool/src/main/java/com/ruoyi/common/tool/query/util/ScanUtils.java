@@ -102,8 +102,8 @@ public final class ScanUtils {
      * @throws IOException
      * @since 1.2.0
      */
-    public static Map<Class<?>, TimeProcessor<?>> doTimeScan(String... basePackages) throws IOException {
-        Map<Class<?>, TimeProcessor<?>> TIME_PROCESSOR_CACHE = new HashMap<>(8);
+    public static Map<Class<?>, TimeProcessor> doTimeScan(String... basePackages) throws IOException {
+        Map<Class<?>, TimeProcessor> TIME_PROCESSOR_CACHE = new HashMap<>(8);
         PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver();
         CachingMetadataReaderFactory cachingMetadataReaderFactory = new CachingMetadataReaderFactory();
         for (String basePackage : basePackages) {
