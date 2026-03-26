@@ -10,6 +10,7 @@
 
     <modules>
         <module>ruoyi-common-log</module>
+        <module>ruoyi-common-tool</module>
         <module>ruoyi-common-core</module>
         <module>ruoyi-common-redis</module>
         <module>ruoyi-common-seata</module>
