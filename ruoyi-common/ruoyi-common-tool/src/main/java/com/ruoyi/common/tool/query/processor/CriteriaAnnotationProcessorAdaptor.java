@@ -86,7 +86,7 @@ public abstract class CriteriaAnnotationProcessorAdaptor<
             case UPPER_CASE_UNDER_LINE:
                 return StringUtils.camelToUnderline(fieldName).toUpperCase();
             default:
-                throw new QueryException("unknown column naming strategy:%s", strategy.name());
+                throw new QueryException(String.format("ColumnNamingStrategy[%s] is not supported", strategy));
         }
     }
 }
